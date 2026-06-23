@@ -1,0 +1,11 @@
+python : <string>:7: SyntaxWarning: invalid escape sequence '\)'
+???? ?:2 ??: 1
++ python -c "
++ ~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (<string>:7: Syn...e sequence '\)':String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "<string>", line 7
+    lines.append('sys.stdout.reconfigure(encoding=" utf-8\)'
+                ^
+SyntaxError: '(' was never closed

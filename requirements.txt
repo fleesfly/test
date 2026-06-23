@@ -1,0 +1,21 @@
+﻿# 金属板表面划痕实时检测系统 - 依赖
+
+# Vimba SDK Python 绑定 (Allied Vision 相机)
+# 安装前请确保已安装 Vimba SDK (从 Allied Vision 官网下载)
+# https://www.alliedvision.com/en/products/software/
+vmbpy
+
+# 计算机视觉
+opencv-python>=4.8.0
+opencv-contrib-python>=4.8.0
+
+# 科学计算
+numpy>=1.24.0
+scipy>=1.10.0
+
+# GUI (通常内置)
+Pillow>=9.0.0
+
+# tkinter 是 Python 标准库，无需额外安装
+# 如果缺少 tkinter:
+#   Windows: 重新安装 Python 并勾选 "tcl/tk and IDLE"
