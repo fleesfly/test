@@ -156,7 +156,7 @@ class HalconDotCalibrator:
                 gray = image[:,:,0].copy()
         else:
             gray = image.copy()
-        success, centers, annotated = self.detect_dots(gray)
+        success, centers, annotated = self.detect_dots(image)
         if success:
             self.object_points.append(self.object_point_template.copy())
             self.image_points.append(centers)
@@ -191,7 +191,32 @@ class HalconDotCalibrator:
         return self.add_image(image, filepath)
 
 
-    
+    def validate_image_quality(self, gray: np.ndarray) -> Dict:
+        """
+        验证标定图像质量，返回 {valid, warnings}
+        """
+        warnings = []
+        
+        # 检查对比度
+        contrast = np.std(gray)
+        if contrast < 20:
+            warnings.append("对比度过低")
+        
+        # 检查亮度
+        mean_brightness = np.mean(gray)
+        if mean_brightness < 30 or mean_brightness > 225:
+            warnings.append("亮度不适合")
+        
+        # 检查清晰度（使用 Laplacian 方差）
+        laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
+        if laplacian_var < 50:
+            warnings.append("图像不清晰")
+        
+        return {
+            "valid": len(warnings) == 0,
+            "warnings": warnings
+        }
+
     def calibrate(self) -> Tuple[bool, float]:
         n = len(self.object_points)
         if n < 4:
@@ -273,8 +298,13 @@ class HalconDotCalibrator:
                     "error_px": round(float(errors[i]), 4),
                 })
         coverage = self._analyze_coverage()
+        
+        # 计算 RMS 质量等级
+        rms_quality = "优秀" if self.rms_error < 0.5 else ("良好" if self.rms_error < 1.0 else "一般")
+        
         return {
             "rms_error_px": round(float(self.rms_error), 4),
+            "rms_quality": rms_quality,
             "camera_matrix": K.tolist(),
             "focal_length": (round(float(fx), 1), round(float(fy), 1)),
             "principal_point": (round(float(cx), 1), round(float(cy), 1)),
